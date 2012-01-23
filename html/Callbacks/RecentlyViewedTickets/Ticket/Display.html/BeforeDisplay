@@ -1,0 +1,17 @@
+<%INIT>
+use List::MoreUtils 'uniq';
+my $pref_key = 'RecentlyViewedTickets';
+my $ids = $session{CurrentUser}->UserObj->Preferences($pref_key, []);
+unshift @$ids, $$TicketObj->id;
+@$ids = uniq @$ids;
+my $limit = RT->Config->Get('RecentlyViewedTicketsLimit', $session{CurrentUser}) || 10;
+if ( @$ids > $limit ) {
+    @$ids = @$ids[0 .. $limit-1];
+}
+
+$session{CurrentUser}->UserObj->SetPreferences($pref_key, $ids);
+</%INIT>
+
+<%ARGS>
+$TicketObj
+</%ARGS>
